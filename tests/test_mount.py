@@ -96,7 +96,7 @@ def test_mount_smb_returns_error(monkeypatch):
     _patch_mounted(monkeypatch, False)
     result = json.loads(
         m.azurefiles_mount_handler(
-            {"account_name": "a", "container_name": "c", "mode": "smb"}
+            {"account_name": "acct1", "container_name": "data", "mode": "smb"}
         )
     )
     assert "error" in result
@@ -115,11 +115,41 @@ def test_mount_missing_container_name():
     assert "container_name" in result["error"]
 
 
+def test_mount_invalid_account_name_rejected(monkeypatch):
+    """Shell-unsafe / illegal account_name must be rejected before any subprocess."""
+    _patch_mounted(monkeypatch, False)
+    bad_names = ["a; rm -rf /", "Acct$Bad", "ab", "-leading", "x" * 64]
+    for bad in bad_names:
+        result = json.loads(
+            m.azurefiles_mount_handler(
+                {"account_name": bad, "container_name": "data"}
+            )
+        )
+        assert "error" in result, f"expected error for account_name={bad!r}"
+        assert "account_name" in result["error"]
+        assert "hint" in result
+
+
+def test_mount_invalid_container_name_rejected(monkeypatch):
+    """Container names with '..', spaces, or shell metachars must be rejected."""
+    _patch_mounted(monkeypatch, False)
+    bad_names = ["../etc", "has space", "weird;name", "UPPER", "x" * 64]
+    for bad in bad_names:
+        result = json.loads(
+            m.azurefiles_mount_handler(
+                {"account_name": "goodacct", "container_name": bad}
+            )
+        )
+        assert "error" in result, f"expected error for container_name={bad!r}"
+        assert "container_name" in result["error"]
+        assert "hint" in result
+
+
 def test_mount_already_mounted(monkeypatch):
     _patch_mounted(monkeypatch, True)
     result = json.loads(
         m.azurefiles_mount_handler(
-            {"account_name": "a", "container_name": "c", "mount_path": "/mnt/x"}
+            {"account_name": "acct1", "container_name": "data", "mount_path": "/mnt/x"}
         )
     )
     assert result["success"] is True
@@ -143,7 +173,7 @@ def test_mount_blobfuse2_auto_install(fake_subprocess, monkeypatch, tmp_path):
 
     result = json.loads(
         m.azurefiles_mount_handler(
-            {"account_name": "a", "container_name": "c"}
+            {"account_name": "acct1", "container_name": "data"}
         )
     )
 

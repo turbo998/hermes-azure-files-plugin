@@ -44,7 +44,7 @@ This plugin is the Azure analogue of `hermes-s3files-plugin` (AWS).
               │                                     │
    ┌──────────▼──────────┐              ┌───────────▼───────────┐
    │  blobfuse2 /        │              │ azure-storage-blob    │
-   │  mount -t nfs|cifs  │              │ + azure-identity      │
+   │  mount -t nfs       │              │ + azure-identity      │
    └──────────┬──────────┘              └───────────┬───────────┘
               │                                     │
               └────────────────┬────────────────────┘
@@ -69,7 +69,7 @@ System dependencies for the mount path (installed by `azurefiles_setup`):
 
 - `blobfuse2` (from Microsoft apt repository on Ubuntu / Debian)
 - `fuse3`
-- `nfs-common` (for Azure Files NFS), `cifs-utils` (for SMB) — optional
+- `nfs-common` (for Azure Files NFS) — optional
 
 ---
 
@@ -83,7 +83,12 @@ by default, which transparently picks up:
 - `az login` shared token cache
 - Visual Studio Code / Azure CLI / Azure PowerShell
 
-Fallback: account key authentication via `auth.get_credential(mode="key",
+The mount path supports **Managed Identity only** (`auth='managed_identity'`,
+which is the default). Account-key and service-principal mount auth modes are
+intentionally not exposed yet — use the SDK path (`blob_*`) if you need static
+credentials.
+
+Fallback for the SDK path: account key via `auth.get_credential(mode="key",
 account=..., api_key=...)` — typically loaded from `AZURE_STORAGE_KEY`.
 
 ### Required RBAC role
@@ -128,8 +133,8 @@ For listing-only workflows, `Storage Blob Data Reader` suffices.
 | Component                      | State    |
 |--------------------------------|----------|
 | Scaffold + auth helper         | ✅ done  |
-| `azurefiles_*` mount tools     | 🚧 wip  |
-| `blob_*` SDK tools             | 🚧 wip  |
-| `register(ctx)` entrypoint     | 🚧 wip  |
+| `azurefiles_*` mount tools     | ✅ done  |
+| `blob_*` SDK tools             | ✅ done  |
+| `register(ctx)` entrypoint     | ✅ done  |
 
 Author: **Chen Qi (turbo998)** · License: MIT
