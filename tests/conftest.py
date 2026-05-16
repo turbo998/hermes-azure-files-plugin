@@ -20,15 +20,26 @@ def fake_subprocess(monkeypatch):
             assert calls[0].args[0][0] == "blobfuse2"
     """
 
-    def _install(returncode: int = 0, stdout: str = "", stderr: str = ""):
+    def _install(returncode: int = 0, stdout: str = "", stderr: str = "",
+                 cmd_results: dict | None = None):
+        """Install fake subprocess.run.
+
+        cmd_results: optional dict mapping a substring (matched against the
+        joined command) -> (returncode, stdout, stderr). First matching key
+        wins; otherwise the default (returncode, stdout, stderr) is used.
+        """
         recorded: list = []
 
-        def _fake_run(cmd, *args, **kwargs):  # noqa: ANN001 — match real signature loosely
+        def _fake_run(cmd, *args, **kwargs):  # noqa: ANN001
+            joined = " ".join(cmd) if isinstance(cmd, (list, tuple)) else str(cmd)
+            rc, out, err = returncode, stdout, stderr
+            if cmd_results:
+                for key, val in cmd_results.items():
+                    if key in joined:
+                        rc, out, err = val
+                        break
             completed = subprocess.CompletedProcess(
-                args=cmd,
-                returncode=returncode,
-                stdout=stdout,
-                stderr=stderr,
+                args=cmd, returncode=rc, stdout=out, stderr=err,
             )
             recorded.append(completed)
             return completed
