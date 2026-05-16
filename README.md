@@ -1,5 +1,15 @@
 # hermes-azure-files-plugin
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
+[![Tests](https://img.shields.io/badge/tests-30%20passing-brightgreen.svg)](#)
+[![Hermes plugin](https://img.shields.io/badge/hermes--agent-plugin-8A2BE2.svg)](https://github.com/NousResearch)
+[![Maturity](https://img.shields.io/badge/maturity-beta-orange.svg)](#)
+
+> **Azure equivalent of [`guanquntang/hermes-s3files-plugin`](https://github.com/guanquntang/hermes-s3files-plugin).**
+> Same Hermes Agent `toolset` shape, swapped onto Azure Blob Storage +
+> BlobFuse2 / Azure Files instead of AWS S3 + NFS.
+
 > **STATUS: Preview** — API surface and tool names may change before 1.0.
 
 Hermes Agent `toolset` plugin that integrates **Azure Blob Storage** and
