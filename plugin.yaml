@@ -1,0 +1,37 @@
+name: azurefiles
+description: "Azure Blob Storage / Azure Files 集成 (BlobFuse2 mount + SDK direct ops)"
+version: "0.1.0"
+author: "Chen Qi (turbo998)"
+license: "MIT"
+type: toolset
+repository: "https://github.com/turbo998/hermes-azure-files-plugin"
+status: "Preview"
+
+# Plugin configuration
+config:
+  default_mount_path: /mnt/azurefiles
+  fuse_tmp_path: /tmp/blobfuse2
+
+# Dependencies — blobfuse2 is installed at runtime via azurefiles_setup
+dependencies: []
+
+# Features
+features:
+  - azurefiles_mount      # Mount Azure Blob container or Azure Files share locally (blobfuse2 / nfs / cifs)
+  - azurefiles_unmount    # Unmount an Azure files / blobfuse2 mount point
+  - azurefiles_status     # List mounted azure-files / blobfuse2 mounts (parsed from /proc/mounts)
+  - azurefiles_setup      # Install blobfuse2 + verify az login / Managed Identity
+  - blob_upload           # Upload a local file to a blob container (SDK direct)
+  - blob_download         # Download a blob to a local path (SDK direct)
+  - blob_list             # List blobs in a container, optional prefix filter
+
+# Documentation
+docs:
+  setup_url: "https://learn.microsoft.com/azure/storage/blobs/blobfuse2-what-is"
+  examples:
+    - name: "Setup prerequisites"
+      description: "Use azurefiles_setup to install blobfuse2 and verify Azure credentials"
+    - name: "Mount a blob container"
+      description: "Use azurefiles_mount with account + container to mount as a local directory via BlobFuse2"
+    - name: "Upload via SDK"
+      description: "Use blob_upload for direct, mount-free file transfers"
