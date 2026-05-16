@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **MAF adapter** (`hermes_azure_files.maf_adapter.get_maf_tools`) —
+  exposes all 7 plugin handlers as Microsoft Agent Framework
+  `FunctionTool` instances, suitable for direct use with
+  `agent_framework.ChatAgent(tools=...)`. Install via the new optional
+  extra: `pip install hermes-azure-files-plugin[maf]`.
+
 ## [0.1.0] - 2026-05-16
 
 ### Added

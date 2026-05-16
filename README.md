@@ -126,6 +126,41 @@ For listing-only workflows, `Storage Blob Data Reader` suffices.
 
 ---
 
+## Use with Microsoft Agent Framework (MAF)
+
+In addition to the native Hermes `toolset` integration, this plugin ships
+an optional adapter that exposes all 7 tools as Microsoft Agent Framework
+`FunctionTool` instances. Install the extra:
+
+```bash
+pip install "hermes-azure-files-plugin[maf]"
+```
+
+Then build a `ChatAgent` with the tools wired in:
+
+```python
+from agent_framework import ChatAgent
+from agent_framework.azure import AzureOpenAIChatClient   # or any chat client
+from hermes_azure_files.maf_adapter import get_maf_tools
+
+agent = ChatAgent(
+    chat_client=AzureOpenAIChatClient(...),
+    instructions="You can manage Azure Blob Storage and Azure Files.",
+    tools=get_maf_tools(),   # 7 tools: mount/unmount/status/setup + blob up/down/list
+)
+
+result = await agent.run(
+    "Upload /tmp/report.csv to container 'reports' in storage account 'myacct'"
+)
+print(result)
+```
+
+The wrappers preserve the original handler behavior — they simply add
+type hints + docstrings so MAF can auto-generate JSON Schema, and decode
+the handlers' JSON-string responses back into dicts.
+
+---
+
 ## Security notes
 
 - **Never commit `connection_string` or `account_key` to git.** Use env vars or
